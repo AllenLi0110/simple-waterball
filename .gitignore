@@ -1,0 +1,47 @@
+--- General Operating System Files ---
+
+.DS_Store
+
+Thumbs.db
+
+--- Frontend (Next.js / Node) ---
+
+/frontend/.next/
+
+/frontend/node_modules/
+
+/frontend/out/
+
+/frontend/npm-debug.log
+.env.local
+
+--- Backend (Spring Boot / Java / Gradle) ---
+
+Build Artifacts
+
+/backend/build/
+
+/backend/out/
+
+/backend/target/
+
+Gradle Wrapper / IDE Files
+
+.gradle/
+
+*.iml
+
+*.iws
+
+*.ipr
+
+!gradle/wrapper/gradle-wrapper.jar
+
+--- Containerization / Environment ---
+
+.env
+
+--- Testing / Tooling ---
+
+/frontend/cypress/videos/
+/frontend/cypress/screenshots/
