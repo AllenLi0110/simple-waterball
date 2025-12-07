@@ -13,7 +13,9 @@ const ProfilePage: React.FC = () => {
   const { user, refreshUser, isAuthenticated, isLoading: authLoading } = useAuth();
   const [activeTab, setActiveTab] = useState<'basic' | 'badges' | 'skills' | 'certificates'>('basic');
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
-  const [loading, setLoading] = useState(true);
+
+  // Compute loading state from dependencies instead of setting it in effect
+  const loading = authLoading || (!isAuthenticated && !user);
 
   useEffect(() => {
     // Wait for AuthContext to finish loading from localStorage
@@ -26,9 +28,6 @@ const ProfilePage: React.FC = () => {
       router.push('/login');
       return;
     }
-
-    // User is authenticated, stop loading
-    setLoading(false);
   }, [user, isAuthenticated, authLoading, router]);
 
   const formatDate = (dateString?: string): string => {

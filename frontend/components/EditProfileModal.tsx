@@ -175,21 +175,25 @@ const EditProfileModal: React.FC<EditProfileModalProps> = ({ isOpen, onClose, on
         throw new Error('用戶未登入');
       }
 
-      const updateData: any = {
+      const updateData: {
+        name: string;
+        gender?: string;
+        nickname?: string;
+        occupation?: string;
+        location?: string;
+        githubLink?: string;
+        avatarUrl?: string;
+        birthday?: string;
+      } = {
         name: formData.name.trim(),
-        gender: formData.gender && formData.gender.trim() ? formData.gender.trim() : null,
-        nickname: formData.nickname && formData.nickname.trim() ? formData.nickname.trim() : null,
-        occupation: formData.occupation && formData.occupation.trim() ? formData.occupation.trim() : null,
-        location: formData.location && formData.location.trim() ? formData.location.trim() : null,
-        githubLink: formData.githubLink && formData.githubLink.trim() ? formData.githubLink.trim() : null,
-        avatarUrl: formData.avatarUrl && formData.avatarUrl.trim() ? formData.avatarUrl.trim() : null,
+        ...(formData.gender && formData.gender.trim() && { gender: formData.gender.trim() }),
+        ...(formData.nickname && formData.nickname.trim() && { nickname: formData.nickname.trim() }),
+        ...(formData.occupation && formData.occupation.trim() && { occupation: formData.occupation.trim() }),
+        ...(formData.location && formData.location.trim() && { location: formData.location.trim() }),
+        ...(formData.githubLink && formData.githubLink.trim() && { githubLink: formData.githubLink.trim() }),
+        ...(formData.avatarUrl && formData.avatarUrl.trim() && { avatarUrl: formData.avatarUrl.trim() }),
+        ...(formData.birthday && { birthday: formData.birthday }),
       };
-
-      if (formData.birthday) {
-        updateData.birthday = formData.birthday;
-      } else {
-        updateData.birthday = null;
-      }
 
       console.log('Updating user with data:', updateData);
       await updateUser(user.id, updateData);

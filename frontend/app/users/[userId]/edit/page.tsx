@@ -31,7 +31,7 @@ const EditUserProfilePage: React.FC = () => {
   useEffect(() => {
     const loadUserData = async () => {
       try {
-        let currentUser = user;
+        const currentUser = user;
         if (!currentUser || currentUser.id !== userId) {
           // If user is not loaded or doesn't match, fetch user data
           await refreshUser(userId);
@@ -134,7 +134,16 @@ const EditUserProfilePage: React.FC = () => {
 
     try {
       // Format birthday as yyyy-MM-dd for backend
-      const updateData: any = {
+      const updateData: {
+        name: string | null;
+        gender: string | null;
+        nickname: string | null;
+        occupation: string | null;
+        location: string | null;
+        githubLink: string | null;
+        avatarUrl: string | null;
+        birthday: string | null;
+      } = {
         name: formData.name || null,
         gender: formData.gender || null,
         nickname: formData.nickname || null,

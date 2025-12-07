@@ -220,11 +220,11 @@ const Sidebar: React.FC<SidebarProps> = ({
 
                     {/* Second Group: Rankings, Rewards Tasks, Challenge Journey */}
                     <div className="p-[15px] space-y-1">
-                        {sidebarItems.slice(2, 5).map((item, index) => {
+                        {sidebarItems.slice(3, 6).map((item, index) => {
                             const isActive = pathname === item.path;
                             return (
                                 <Link
-                                    key={index + 2}
+                                    key={index + 3}
                                     href={item.path}
                                     className={`flex items-center py-[12px] px-[10px] rounded-[20px] cursor-pointer transition-colors h-8 text-sm gap-[15px] ${
                                         isActive 
@@ -244,7 +244,7 @@ const Sidebar: React.FC<SidebarProps> = ({
 
                     {/* Third Group: All Units, Challenge Map, SOP Encyclopedia */}
                     <div className="p-[15px] space-y-1">
-                        {sidebarItems.slice(5).map((item, index) => {
+                        {sidebarItems.slice(6).map((item, index) => {
                             const isActive = pathname === item.path;
                             return (
                                 <Link
