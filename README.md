@@ -9,6 +9,10 @@ This is a web app for showing courses. Students can:
 - Click a course to see details
 - Watch videos in each course
 
+## Demo
+
+![Simple Waterball Demo](./frontend/public/gifs/simple-waterball-allen-release.gif)
+
 ## Tech Stack
 
 - **Frontend**: Next.js (React, TypeScript)
