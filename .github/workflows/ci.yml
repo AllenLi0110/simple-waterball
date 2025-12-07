@@ -82,8 +82,9 @@ jobs:
           cd ../backend
           chmod +x ./gradlew
           ./gradlew build -x test
-          java -jar build/libs/*.jar &
-          sleep 30
+          nohup java -jar build/libs/*.jar > /tmp/backend.log 2>&1 &
+          echo $! > /tmp/backend.pid
+          sleep 10
       
       - name: Check backend health
         run: |
@@ -96,12 +97,35 @@ jobs:
             sleep 2
           done
           echo "Backend failed to start"
+          cat /tmp/backend.log || true
+          exit 1
+      
+      - name: Start frontend server
+        run: |
+          nohup npm run start > /tmp/frontend.log 2>&1 &
+          echo $! > /tmp/frontend.pid
+        env:
+          NEXT_PUBLIC_API_URL: http://localhost:8080
+      
+      - name: Wait for frontend server
+        run: |
+          for i in {1..30}; do
+            if curl -f http://localhost:3000 > /dev/null 2>&1; then
+              echo "Frontend is ready"
+              exit 0
+            fi
+            echo "Waiting for frontend... ($i/30)"
+            sleep 2
+          done
+          echo "Frontend failed to start"
+          cat /tmp/frontend.log || true
           exit 1
       
       - name: Run Playwright tests
         run: npx playwright test
         env:
           PLAYWRIGHT_TEST_BASE_URL: http://localhost:3000
+          CI: 'true'
       
       - name: Upload Playwright report
         uses: actions/upload-artifact@v4
@@ -160,8 +184,9 @@ jobs:
           cd ../backend
           chmod +x ./gradlew
           ./gradlew build -x test
-          java -jar build/libs/*.jar &
-          sleep 30
+          nohup java -jar build/libs/*.jar > /tmp/backend.log 2>&1 &
+          echo $! > /tmp/backend.pid
+          sleep 10
       
       - name: Check backend health
         run: |
@@ -174,13 +199,48 @@ jobs:
             sleep 2
           done
           echo "Backend failed to start"
+          cat /tmp/backend.log || true
           exit 1
       
+      - name: Start frontend server
+        run: |
+          nohup npm run start > /tmp/frontend.log 2>&1 &
+          echo $! > /tmp/frontend.pid
+        env:
+          NEXT_PUBLIC_API_URL: http://localhost:8080
+      
+      - name: Wait for frontend server
+        run: |
+          for i in {1..30}; do
+            if curl -f http://localhost:3000 > /dev/null 2>&1; then
+              echo "Frontend is ready"
+              exit 0
+            fi
+            echo "Waiting for frontend... ($i/30)"
+            sleep 2
+          done
+          echo "Frontend failed to start"
+          cat /tmp/frontend.log || true
+          exit 1
+      
+      - name: Create reports directory
+        run: mkdir -p reports
+      
       - name: Run Cucumber BDD tests
-        run: npm run test:bdd
+        run: |
+          npx cucumber-js specs/features/ \
+            --require-module ts-node/register \
+            --require tests/step-definitions/common.steps.ts \
+            --require tests/step-definitions/course-list.steps.ts \
+            --require tests/step-definitions/course-detail.steps.ts \
+            --require tests/support/world.ts \
+            --require tests/support/hooks.ts \
+            --format html:reports/cucumber-report.html \
+            --format json:reports/cucumber-report.json
         env:
           CI: 'true'
           PLAYWRIGHT_TEST_BASE_URL: http://localhost:3000
+        continue-on-error: false
       
       - name: Upload Cucumber HTML report
         uses: actions/upload-artifact@v4
@@ -189,6 +249,7 @@ jobs:
           name: cucumber-report
           path: frontend/reports/cucumber-report.html
           retention-days: 30
+          if-no-files-found: ignore
       
       - name: Upload Cucumber JSON report
         uses: actions/upload-artifact@v4
@@ -197,6 +258,7 @@ jobs:
           name: cucumber-json-report
           path: frontend/reports/cucumber-report.json
           retention-days: 7
+          if-no-files-found: ignore
 
   # 後端 Tests
   backend-tests:
@@ -321,6 +383,14 @@ jobs:
     steps:
       - name: Check all tests status
         run: |
+          echo "Checking test results..."
+          echo "Frontend Unit Tests: ${{ needs.frontend-unit-tests.result }}"
+          echo "Frontend E2E Tests: ${{ needs.frontend-e2e-tests.result }}"
+          echo "Frontend BDD Tests: ${{ needs.frontend-bdd-tests.result }}"
+          echo "Backend Tests: ${{ needs.backend-tests.result }}"
+          echo "Lint: ${{ needs.lint.result }}"
+          echo "Build Check: ${{ needs.build-check.result }}"
+          
           if [ "${{ needs.frontend-unit-tests.result }}" != "success" ] || \
              [ "${{ needs.frontend-e2e-tests.result }}" != "success" ] || \
              [ "${{ needs.frontend-bdd-tests.result }}" != "success" ] || \
