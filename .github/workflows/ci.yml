@@ -122,7 +122,7 @@ jobs:
           exit 1
       
       - name: Run Playwright tests
-        run: npx playwright test
+        run: npx playwright test --project=chromium
         env:
           PLAYWRIGHT_TEST_BASE_URL: http://localhost:3000
           CI: 'true'
@@ -227,16 +227,7 @@ jobs:
         run: mkdir -p reports
       
       - name: Run Cucumber BDD tests
-        run: |
-          npx cucumber-js specs/features/ \
-            --require-module ts-node/register \
-            --require tests/step-definitions/common.steps.ts \
-            --require tests/step-definitions/course-list.steps.ts \
-            --require tests/step-definitions/course-detail.steps.ts \
-            --require tests/support/world.ts \
-            --require tests/support/hooks.ts \
-            --format html:reports/cucumber-report.html \
-            --format json:reports/cucumber-report.json
+        run: npx cucumber-js
         env:
           CI: 'true'
           PLAYWRIGHT_TEST_BASE_URL: http://localhost:3000

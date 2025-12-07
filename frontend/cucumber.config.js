@@ -2,6 +2,7 @@ module.exports = {
   default: {
     requireModule: 'ts-node/register',
     require: [
+      'tests/step-definitions/common.steps.ts',
       'tests/step-definitions/course-list.steps.ts',
       'tests/step-definitions/course-detail.steps.ts',
       'tests/support/world.ts',
