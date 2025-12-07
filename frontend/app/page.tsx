@@ -141,25 +141,6 @@ const HomePage: React.FC = () => {
                         </div>
                     )}
 
-                    {mainCourse && (
-                        <>
-                            {/* Top Announcement/Discount Message */}
-                            <div className="bg-[#1c1f2e] text-white p-4 rounded-lg border border-gray-400 flex items-center justify-between mb-8">
-                                <p className="font-semibold text-sm md:text-base">
-                                    <Link href="/courses/1" className="hover:underline">
-                                        將軟體設計精通之旅體驗課程的全部影片看完就可以獲得 3000 元課程折價券！
-                                    </Link>
-                                </p>
-                                <Link href="/courses/1">
-                                    <button className="ml-4 px-4 py-3 bg-[#ffd700] text-gray-900 text-sm font-bold rounded-lg hover:bg-yellow-400 transition-colors shrink-0">
-                                        前往
-                                    </button>
-                                </Link>
-                            </div>
-
-                        </>
-                    )}
-
                     {/* Course Card Grid Layout */}
                     {courses.length === 0 && !loading && !error && (
                         <div className="text-yellow-400 text-lg mb-4">

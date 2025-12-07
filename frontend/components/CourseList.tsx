@@ -135,7 +135,9 @@ const CourseList: React.FC<CourseListProps> = ({
         
         const fetchPurchasedCourses = async () => {
             try {
-                const response = await fetch(`${API_URL}/api/orders/user/${user.id}`);
+                const response = await fetch(`${API_URL}/api/orders/user/${user.id}`, {
+                    credentials: 'include',
+                });
                 if (!response.ok) {
                     return; // Silently fail if orders can't be fetched
                 }

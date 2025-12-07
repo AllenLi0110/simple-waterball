@@ -18,7 +18,7 @@ import java.util.stream.Collectors;
  */
 @RestController
 @RequestMapping("/api/orders")
-@CrossOrigin(origins = "*") // Allow cross-origin requests from all sources
+// CORS is handled globally by WebConfig
 public class OrderController {
     
     @Autowired

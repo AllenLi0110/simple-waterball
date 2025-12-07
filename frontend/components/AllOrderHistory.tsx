@@ -22,7 +22,9 @@ const AllOrderHistory: React.FC = () => {
         
         const fetchAllOrders = async () => {
             try {
-                const response = await fetch(`${API_URL}/api/orders/user/${user.id}`);
+                const response = await fetch(`${API_URL}/api/orders/user/${user.id}`, {
+                    credentials: 'include',
+                });
                 if (!response.ok) {
                     throw new Error(`HTTP error! status: ${response.status}`);
                 }

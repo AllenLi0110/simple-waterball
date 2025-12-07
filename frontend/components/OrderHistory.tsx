@@ -23,7 +23,9 @@ const OrderHistory: React.FC<OrderHistoryProps> = ({ courseId }) => {
         
         const fetchOrders = async () => {
             try {
-                const response = await fetch(`${API_URL}/api/orders/user/${user.id}/course/${courseId}`);
+                const response = await fetch(`${API_URL}/api/orders/user/${user.id}/course/${courseId}`, {
+                    credentials: 'include',
+                });
                 if (!response.ok) {
                     throw new Error(`HTTP error! status: ${response.status}`);
                 }
