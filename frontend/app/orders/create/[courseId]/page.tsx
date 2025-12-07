@@ -3,7 +3,7 @@
 import React, { useState, useEffect } from 'react';
 import { useParams, useRouter } from 'next/navigation';
 import { useAuth } from '../../../../contexts/AuthContext';
-import { Course, Chapter, Video } from '../../../../types/course';
+import { Course, Chapter } from '../../../../types/course';
 
 // Chapter Accordion Component
 const ChapterAccordion: React.FC<{ chapters: Chapter[] }> = ({ chapters }) => {
@@ -35,7 +35,7 @@ const ChapterAccordion: React.FC<{ chapters: Chapter[] }> = ({ chapters }) => {
         <div className="space-y-2">
             {chapters.map((chapter) => {
                 const isExpanded = expandedChapters.has(chapter.id);
-                const totalVideos = chapter.videos ? chapter.videos.length : 0;
+                // const totalVideos = chapter.videos ? chapter.videos.length : 0;
                 
                 return (
                     <div key={chapter.id} className="bg-gray-700 rounded-lg overflow-hidden">

@@ -2,7 +2,7 @@
 
 import React, { useState, useEffect } from 'react';
 import CourseCard from './CourseCard';
-import { Course, ApiResponse } from '../types/course';
+import { Course } from '../types/course';
 import { useAuth } from '../contexts/AuthContext';
 import { Order } from '../types/order';
 
@@ -124,7 +124,7 @@ const CourseList: React.FC<CourseListProps> = ({
         };
 
         fetchCourses();
-    }, [API_URL, showSelection, isControlled]);
+    }, [API_URL, showSelection, isControlled, selectedCourseIdProp]);
     
     // Fetch user's purchased courses
     useEffect(() => {

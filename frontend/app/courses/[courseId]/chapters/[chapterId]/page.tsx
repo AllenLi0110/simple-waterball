@@ -5,7 +5,7 @@ import { useParams, useRouter } from 'next/navigation';
 import Hls from 'hls.js';
 import Sidebar from '../../../../../components/Sidebar';
 import Header from '../../../../../components/Header';
-import { Course, Chapter, Video, ApiResponse } from '../../../../../types/course';
+import { Course, Chapter, Video } from '../../../../../types/course';
 
 const ChapterDetailPage: React.FC = () => {
     const params = useParams();
@@ -204,7 +204,7 @@ const ChapterDetailPage: React.FC = () => {
                         const hls = new Hls({
                             enableWorker: false, 
                             lowLatencyMode: false,
-                            xhrSetup: (xhr, url) => {
+                            xhrSetup: (xhr) => {
                                 // 避免發送憑證，減少 CORS 複雜性
                                 xhr.withCredentials = false;
                             },

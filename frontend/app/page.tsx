@@ -5,7 +5,7 @@ import Sidebar from '../components/Sidebar';
 import CourseList from '../components/CourseList';
 import Footer from '../components/Footer';
 import Header from '../components/Header';
-import { Course, ApiResponse } from '../types/course';
+import { Course } from '../types/course';
 import { FileText, BookOpen, Users, Star, ArrowRight } from 'lucide-react';
 import Link from 'next/link';
 

@@ -62,7 +62,7 @@ describe('CourseList Component', () => {
         } as Response);
       }
       // Return undefined for other URLs to let individual tests override
-      return undefined as any;
+      return Promise.reject(new Error('Unexpected URL')) as Promise<Response>;
     });
   });
 

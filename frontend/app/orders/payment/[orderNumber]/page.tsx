@@ -9,7 +9,7 @@ import { Course } from '../../../../types/course';
 const PaymentPage: React.FC = () => {
     const params = useParams();
     const router = useRouter();
-    const { user, isAuthenticated } = useAuth();
+    const { isAuthenticated } = useAuth();
     const orderNumber = params?.orderNumber as string;
     const API_URL: string = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8080';
     

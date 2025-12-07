@@ -2,7 +2,7 @@
 
 import React, { useState, useEffect } from 'react';
 import { useParams, useRouter } from 'next/navigation';
-import { Course, Chapter } from '../../../types/course';
+import { Course } from '../../../types/course';
 
 const CourseDetailPage: React.FC = () => {
     const params = useParams();
