@@ -78,7 +78,7 @@ const ChapterAccordion: React.FC<{ chapters: Chapter[] }> = ({ chapters }) => {
 const CreateOrderPage: React.FC = () => {
     const params = useParams();
     const router = useRouter();
-    const { user, isAuthenticated } = useAuth();
+    const { user, isAuthenticated, isLoading: authLoading } = useAuth();
     const courseId = params?.courseId as string;
     const API_URL: string = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8080';
     
@@ -87,6 +87,11 @@ const CreateOrderPage: React.FC = () => {
     const [error, setError] = useState<string | null>(null);
     
     useEffect(() => {
+        // Wait for AuthContext to finish loading from localStorage
+        if (authLoading) {
+            return;
+        }
+        
         if (!isAuthenticated) {
             router.push('/login');
             return;
@@ -119,7 +124,7 @@ const CreateOrderPage: React.FC = () => {
         };
         
         fetchCourse();
-    }, [courseId, isAuthenticated, router, API_URL]);
+    }, [courseId, isAuthenticated, authLoading, router, API_URL]);
     
     const handleNextStep = async () => {
         if (!user || !course) return;
@@ -131,6 +136,7 @@ const CreateOrderPage: React.FC = () => {
                 headers: {
                     'Content-Type': 'application/json',
                 },
+                credentials: 'include',
                 body: JSON.stringify({
                     userId: user.id,
                     courseId: course.id

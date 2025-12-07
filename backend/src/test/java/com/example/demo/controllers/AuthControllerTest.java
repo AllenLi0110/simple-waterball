@@ -6,6 +6,7 @@ import com.example.demo.responses.ApiResponse;
 import com.example.demo.responses.AuthResponse;
 import com.example.demo.responses.UserResponse;
 import com.example.demo.services.AuthService;
+import jakarta.servlet.http.HttpServletResponse;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -29,6 +30,9 @@ class AuthControllerTest {
 
     @Mock
     private AuthService authService;
+
+    @Mock
+    private HttpServletResponse httpServletResponse;
 
     @InjectMocks
     private AuthController authController;
@@ -61,7 +65,7 @@ class AuthControllerTest {
                 .thenReturn(testAuthResponse);
 
         // When
-        ResponseEntity<ApiResponse<AuthResponse>> response = authController.register(request);
+        ResponseEntity<ApiResponse<AuthResponse>> response = authController.register(request, httpServletResponse);
 
         // Then
         assertNotNull(response);
@@ -85,7 +89,7 @@ class AuthControllerTest {
                 .thenThrow(new IllegalArgumentException("Username already exists"));
 
         // When
-        ResponseEntity<ApiResponse<AuthResponse>> response = authController.register(request);
+        ResponseEntity<ApiResponse<AuthResponse>> response = authController.register(request, httpServletResponse);
 
         // Then
         assertNotNull(response);
@@ -107,7 +111,7 @@ class AuthControllerTest {
                 .thenReturn(testAuthResponse);
 
         // When
-        ResponseEntity<ApiResponse<AuthResponse>> response = authController.login(request);
+        ResponseEntity<ApiResponse<AuthResponse>> response = authController.login(request, httpServletResponse);
 
         // Then
         assertNotNull(response);
@@ -130,7 +134,7 @@ class AuthControllerTest {
                 .thenThrow(new IllegalArgumentException("Invalid username or password"));
 
         // When
-        ResponseEntity<ApiResponse<AuthResponse>> response = authController.login(request);
+        ResponseEntity<ApiResponse<AuthResponse>> response = authController.login(request, httpServletResponse);
 
         // Then
         assertNotNull(response);
@@ -144,7 +148,7 @@ class AuthControllerTest {
     @Test
     void shouldLogoutSuccessfully() {
         // When
-        ResponseEntity<ApiResponse<Void>> response = authController.logout();
+        ResponseEntity<ApiResponse<Void>> response = authController.logout(httpServletResponse);
 
         // Then
         assertNotNull(response);

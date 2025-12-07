@@ -9,7 +9,7 @@ import { Course } from '../../../../types/course';
 const PaymentPage: React.FC = () => {
     const params = useParams();
     const router = useRouter();
-    const { isAuthenticated } = useAuth();
+    const { isAuthenticated, isLoading: authLoading } = useAuth();
     const orderNumber = params?.orderNumber as string;
     const API_URL: string = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8080';
     
@@ -21,6 +21,11 @@ const PaymentPage: React.FC = () => {
     const [showSuccess, setShowSuccess] = useState<boolean>(false);
     
     useEffect(() => {
+        // Wait for AuthContext to finish loading from localStorage
+        if (authLoading) {
+            return;
+        }
+        
         if (!isAuthenticated) {
             router.push('/login');
             return;
@@ -30,7 +35,9 @@ const PaymentPage: React.FC = () => {
             if (!orderNumber) return;
             
             try {
-                const response = await fetch(`${API_URL}/api/orders/number/${orderNumber}`);
+                const response = await fetch(`${API_URL}/api/orders/number/${orderNumber}`, {
+                    credentials: 'include',
+                });
                 if (!response.ok) {
                     throw new Error('Failed to load order');
                 }
@@ -59,7 +66,7 @@ const PaymentPage: React.FC = () => {
         };
         
         fetchOrder();
-    }, [orderNumber, isAuthenticated, router, API_URL]);
+    }, [orderNumber, isAuthenticated, authLoading, router, API_URL]);
     
     const handlePayment = async () => {
         if (!order || !orderNumber) return;
@@ -69,6 +76,7 @@ const PaymentPage: React.FC = () => {
         try {
             const response = await fetch(`${API_URL}/api/orders/${orderNumber}/complete-payment`, {
                 method: 'POST',
+                credentials: 'include',
             });
             
             if (!response.ok) {

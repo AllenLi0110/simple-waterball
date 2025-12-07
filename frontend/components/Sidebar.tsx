@@ -3,7 +3,7 @@
 import React from 'react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-import { Home, LayoutDashboard, Trophy, Album, Map, BookText, Gift, SquareChartGantt } from 'lucide-react';
+import { Home, LayoutDashboard, Trophy, Album, Map, BookText, Gift, SquareChartGantt, User } from 'lucide-react';
 import { Course, Chapter, Video } from '../types/course';
 
 interface SidebarItem {
@@ -26,6 +26,7 @@ interface SidebarProps {
 const sidebarItems: SidebarItem[] = [
     { icon: Home, label: '首頁', path: '/' },
     { icon: LayoutDashboard, label: '課程', path: '/courses' },
+    { icon: User, label: '個人檔案', path: '/profile' },
     { icon: Trophy, label: '排行榜', path: '/rankings', dividerBefore: true },
     { icon: Gift, label: '獎勵任務', path: '/rewards-tasks' },
     { icon: SquareChartGantt, label: '挑戰歷程', path: '/challenge-journey' },
@@ -188,11 +189,11 @@ const Sidebar: React.FC<SidebarProps> = ({
             ) : (
                 /* Regular Navigation */
                 <>
-                    {/* First Group: Home and Courses */}
+                    {/* First Group: Home, Courses, and Profile */}
                     <div className="relative flex w-full min-w-0 flex-col p-[15px]">
                         <div className="w-full text-sm">
                             <ul className="flex w-full min-w-0 flex-col gap-1">
-                                {sidebarItems.slice(0, 2).map((item, index) => {
+                                {sidebarItems.slice(0, 3).map((item, index) => {
                                     const isActive = pathname === item.path;
                                     return (
                                         <li key={index} className="group/menu-item relative">
@@ -219,11 +220,11 @@ const Sidebar: React.FC<SidebarProps> = ({
 
                     {/* Second Group: Rankings, Rewards Tasks, Challenge Journey */}
                     <div className="p-[15px] space-y-1">
-                        {sidebarItems.slice(2, 5).map((item, index) => {
+                        {sidebarItems.slice(3, 6).map((item, index) => {
                             const isActive = pathname === item.path;
                             return (
                                 <Link
-                                    key={index + 2}
+                                    key={index + 3}
                                     href={item.path}
                                     className={`flex items-center py-[12px] px-[10px] rounded-[20px] cursor-pointer transition-colors h-8 text-sm gap-[15px] ${
                                         isActive 
@@ -243,7 +244,7 @@ const Sidebar: React.FC<SidebarProps> = ({
 
                     {/* Third Group: All Units, Challenge Map, SOP Encyclopedia */}
                     <div className="p-[15px] space-y-1">
-                        {sidebarItems.slice(5).map((item, index) => {
+                        {sidebarItems.slice(6).map((item, index) => {
                             const isActive = pathname === item.path;
                             return (
                                 <Link

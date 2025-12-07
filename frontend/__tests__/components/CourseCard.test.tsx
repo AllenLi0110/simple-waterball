@@ -77,8 +77,17 @@ describe('CourseCard Component', () => {
     expect(card).toHaveClass('bg-gray-800');
   });
 
-  test('should navigate to course detail page when clicking course card', () => {
-    render(<CourseCard data={mockCourse} />);
+  test('should navigate to order creation page when clicking course card (not purchased)', () => {
+    render(<CourseCard data={mockCourse} isPurchased={false} />);
+    const card = screen.getByText('測試課程').closest('div');
+    if (card) {
+      fireEvent.click(card);
+      expect(mockPush).toHaveBeenCalledWith('/orders/create/1');
+    }
+  });
+
+  test('should navigate to course detail page when clicking course card (purchased)', () => {
+    render(<CourseCard data={mockCourse} isPurchased={true} />);
     const card = screen.getByText('測試課程').closest('div');
     if (card) {
       fireEvent.click(card);
@@ -87,10 +96,17 @@ describe('CourseCard Component', () => {
   });
 
   test('should navigate to order creation page when clicking purchase button', () => {
-    render(<CourseCard data={mockCourse} />);
+    render(<CourseCard data={mockCourse} isPurchased={false} />);
     const button = screen.getByText('立即購買');
     fireEvent.click(button);
     expect(mockPush).toHaveBeenCalledWith('/orders/create/1');
+  });
+
+  test('should navigate to course detail page when clicking button (purchased)', () => {
+    render(<CourseCard data={mockCourse} isPurchased={true} />);
+    const button = screen.getByText('開始上課');
+    fireEvent.click(button);
+    expect(mockPush).toHaveBeenCalledWith('/courses/1');
   });
 
   test('should display fallback content when image fails to load', () => {

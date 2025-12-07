@@ -1,6 +1,7 @@
 package com.example.demo.models;
 
 import jakarta.persistence.*;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 
 /**
@@ -25,6 +26,27 @@ public class User {
     
     @Column(name = "created_at")
     private LocalDateTime createdAt;
+    
+    @Column(name = "gender")
+    private String gender; // 心理性別: 男、女
+    
+    @Column(name = "nickname")
+    private String nickname; // 暱稱
+    
+    @Column(name = "occupation")
+    private String occupation; // 職業
+    
+    @Column(name = "birthday")
+    private LocalDate birthday; // 生日
+    
+    @Column(name = "location")
+    private String location; // 所在地區
+    
+    @Column(name = "github_link")
+    private String githubLink; // Github連結
+    
+    @Column(name = "avatar_url", columnDefinition = "TEXT")
+    private String avatarUrl; // 頭像URL
     
     @PrePersist
     protected void onCreate() {
@@ -80,5 +102,61 @@ public class User {
     
     public void setCreatedAt(LocalDateTime createdAt) {
         this.createdAt = createdAt;
+    }
+    
+    public String getGender() {
+        return gender;
+    }
+    
+    public void setGender(String gender) {
+        this.gender = gender;
+    }
+    
+    public String getNickname() {
+        return nickname;
+    }
+    
+    public void setNickname(String nickname) {
+        this.nickname = nickname;
+    }
+    
+    public String getOccupation() {
+        return occupation;
+    }
+    
+    public void setOccupation(String occupation) {
+        this.occupation = occupation;
+    }
+    
+    public LocalDate getBirthday() {
+        return birthday;
+    }
+    
+    public void setBirthday(LocalDate birthday) {
+        this.birthday = birthday;
+    }
+    
+    public String getLocation() {
+        return location;
+    }
+    
+    public void setLocation(String location) {
+        this.location = location;
+    }
+    
+    public String getGithubLink() {
+        return githubLink;
+    }
+    
+    public void setGithubLink(String githubLink) {
+        this.githubLink = githubLink;
+    }
+    
+    public String getAvatarUrl() {
+        return avatarUrl;
+    }
+    
+    public void setAvatarUrl(String avatarUrl) {
+        this.avatarUrl = avatarUrl;
     }
 }

@@ -6,6 +6,13 @@ interface User {
   id: number;
   name: string;
   username: string;
+  gender?: string;
+  nickname?: string;
+  occupation?: string;
+  birthday?: string;
+  location?: string;
+  githubLink?: string;
+  avatarUrl?: string;
 }
 
 interface AuthContextType {
@@ -13,27 +20,60 @@ interface AuthContextType {
   login: (username: string, password: string) => Promise<void>;
   register: (name: string, username: string, password: string) => Promise<void>;
   logout: () => Promise<void>;
+  updateUser: (userId: number, userData: Partial<User>) => Promise<void>;
+  refreshUser: (userId: number) => Promise<void>;
   isAuthenticated: boolean;
+  isLoading: boolean;
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
 export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
   const [user, setUser] = useState<User | null>(null);
+  const [isLoading, setIsLoading] = useState(true);
   const API_URL: string = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8080';
 
-  // Load user from localStorage on mount
+  // Verify token from cookie on mount
   useEffect(() => {
-    const savedUser = localStorage.getItem('user');
-    if (savedUser) {
+    const verifyToken = async () => {
       try {
-        setUser(JSON.parse(savedUser));
+        const response = await fetch(`${API_URL}/api/auth/verify`, {
+          method: 'GET',
+          credentials: 'include', // Include cookies
+        });
+
+        if (response.ok) {
+          const data = await response.json();
+          if (data.success && data.data) {
+            // Token is valid, user is authenticated
+            setUser(data.data);
+            localStorage.setItem('user', JSON.stringify(data.data));
+          } else {
+            // Not authenticated (normal when user is not logged in)
+            localStorage.removeItem('user');
+          }
+        } else {
+          // Network or server error - clear localStorage
+          localStorage.removeItem('user');
+        }
       } catch (e) {
-        console.error('Failed to parse saved user:', e);
-        localStorage.removeItem('user');
+        // Network error - silently fallback to localStorage
+        const savedUser = localStorage.getItem('user');
+        if (savedUser) {
+          try {
+            setUser(JSON.parse(savedUser));
+          } catch (parseError) {
+            // Silent fail - invalid localStorage data
+            localStorage.removeItem('user');
+          }
+        }
+      } finally {
+        setIsLoading(false);
       }
-    }
-  }, []);
+    };
+
+    verifyToken();
+  }, [API_URL]);
 
   const login = async (username: string, password: string) => {
     const response = await fetch(`${API_URL}/api/auth/login`, {
@@ -41,6 +81,7 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
       headers: {
         'Content-Type': 'application/json',
       },
+      credentials: 'include', // Include cookies
       body: JSON.stringify({ username, password }),
     });
 
@@ -61,6 +102,7 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
       headers: {
         'Content-Type': 'application/json',
       },
+      credentials: 'include', // Include cookies
       body: JSON.stringify({ name, username, password }),
     });
 
@@ -79,6 +121,7 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
     try {
       await fetch(`${API_URL}/api/auth/logout`, {
         method: 'POST',
+        credentials: 'include', // Include cookies
       });
     } catch (e) {
       console.error('Logout API call failed:', e);
@@ -88,6 +131,50 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
     }
   };
 
+  const updateUser = async (userId: number, userData: Partial<User>) => {
+    console.log(`Updating user ${userId} with data:`, userData);
+    console.log(`API URL: ${API_URL}/api/users/${userId}`);
+    
+    const response = await fetch(`${API_URL}/api/users/${userId}`, {
+      method: 'PUT',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      credentials: 'include', // Include cookies
+      body: JSON.stringify(userData),
+    });
+
+    console.log('Response status:', response.status);
+    const data = await response.json();
+    console.log('Response data:', data);
+
+    if (!response.ok || !data.success) {
+      const errorMessage = data.message || `Update failed: ${response.status} ${response.statusText}`;
+      console.error('Update failed:', errorMessage);
+      throw new Error(errorMessage);
+    }
+
+    const updatedUser = data.data;
+    console.log('Updated user:', updatedUser);
+    setUser(updatedUser);
+    localStorage.setItem('user', JSON.stringify(updatedUser));
+  };
+
+  const refreshUser = async (userId: number) => {
+    const response = await fetch(`${API_URL}/api/users/${userId}`, {
+      credentials: 'include', // Include cookies
+    });
+    const data = await response.json();
+
+    if (!response.ok || !data.success) {
+      throw new Error(data.message || 'Failed to fetch user');
+    }
+
+    const userData = data.data;
+    setUser(userData);
+    localStorage.setItem('user', JSON.stringify(userData));
+  };
+
   return (
     <AuthContext.Provider
       value={{
@@ -95,7 +182,10 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
         login,
         register,
         logout,
+        updateUser,
+        refreshUser,
         isAuthenticated: !!user,
+        isLoading,
       }}
     >
       {children}

@@ -6,16 +6,11 @@ import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
 /**
  * CORS middleware configuration
+ * Note: This is now handled by WebConfig. Keeping for backward compatibility but disabled.
  */
 @Configuration
 public class CorsMiddleware implements WebMvcConfigurer {
     
-    @Override
-    public void addCorsMappings(CorsRegistry registry) {
-        registry.addMapping("/api/**")
-                .allowedOrigins("*")
-                .allowedMethods("GET", "POST", "PUT", "DELETE", "OPTIONS")
-                .allowedHeaders("*")
-                .maxAge(3600);
-    }
+    // CORS configuration moved to WebConfig to support credentials
+    // This class is kept for backward compatibility but no longer configures CORS
 }

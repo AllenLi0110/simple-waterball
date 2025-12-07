@@ -4,6 +4,7 @@ import com.example.demo.models.User;
 import com.example.demo.repositories.UserRepository;
 import com.example.demo.responses.AuthResponse;
 import com.example.demo.responses.UserResponse;
+import com.example.demo.utils.JwtUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -17,6 +18,9 @@ public class AuthService {
     
     @Autowired
     private UserRepository userRepository;
+    
+    @Autowired
+    private JwtUtil jwtUtil;
     
     /**
      * Register a new user
@@ -37,14 +41,12 @@ public class AuthService {
         user = userRepository.save(user);
         
         // Convert to response
-        UserResponse userResponse = new UserResponse(
-            user.getId(),
-            user.getName(),
-            user.getUsername(),
-            user.getCreatedAt()
-        );
+        UserResponse userResponse = convertToResponse(user);
         
-        return new AuthResponse(userResponse, null);
+        // Generate JWT token
+        String token = jwtUtil.generateToken(user.getId());
+        
+        return new AuthResponse(userResponse, token);
     }
     
     /**
@@ -64,13 +66,31 @@ public class AuthService {
         }
         
         // Convert to response
-        UserResponse userResponse = new UserResponse(
+        UserResponse userResponse = convertToResponse(user);
+        
+        // Generate JWT token
+        String token = jwtUtil.generateToken(user.getId());
+        
+        return new AuthResponse(userResponse, token);
+    }
+    
+    /**
+     * Convert User entity to UserResponse
+     */
+    private UserResponse convertToResponse(User user) {
+        UserResponse response = new UserResponse(
             user.getId(),
             user.getName(),
             user.getUsername(),
             user.getCreatedAt()
         );
-        
-        return new AuthResponse(userResponse, null);
+        response.setGender(user.getGender());
+        response.setNickname(user.getNickname());
+        response.setOccupation(user.getOccupation());
+        response.setBirthday(user.getBirthday());
+        response.setLocation(user.getLocation());
+        response.setGithubLink(user.getGithubLink());
+        response.setAvatarUrl(user.getAvatarUrl());
+        return response;
     }
 }

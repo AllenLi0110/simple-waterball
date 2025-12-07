@@ -4,6 +4,7 @@ import com.example.demo.models.User;
 import com.example.demo.repositories.UserRepository;
 import com.example.demo.responses.AuthResponse;
 import com.example.demo.responses.UserResponse;
+import com.example.demo.utils.JwtUtil;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -26,6 +27,9 @@ class AuthServiceTest {
 
     @Mock
     private UserRepository userRepository;
+
+    @Mock
+    private JwtUtil jwtUtil;
 
     @InjectMocks
     private AuthService authService;
@@ -56,6 +60,7 @@ class AuthServiceTest {
             user.setCreatedAt(LocalDateTime.now());
             return user;
         });
+        when(jwtUtil.generateToken(anyLong())).thenReturn("test-token");
 
         // When
         AuthResponse response = authService.register(name, username, password);
@@ -95,6 +100,7 @@ class AuthServiceTest {
         String password = "password123";
         
         when(userRepository.findByUsername(username)).thenReturn(Optional.of(testUser));
+        when(jwtUtil.generateToken(anyLong())).thenReturn("test-token");
 
         // When
         AuthResponse response = authService.login(username, password);
