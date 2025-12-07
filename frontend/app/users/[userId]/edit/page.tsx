@@ -135,29 +135,24 @@ const EditUserProfilePage: React.FC = () => {
     try {
       // Format birthday as yyyy-MM-dd for backend
       const updateData: {
-        name: string | null;
-        gender: string | null;
-        nickname: string | null;
-        occupation: string | null;
-        location: string | null;
-        githubLink: string | null;
-        avatarUrl: string | null;
-        birthday: string | null;
+        name: string;
+        gender?: string;
+        nickname?: string;
+        occupation?: string;
+        location?: string;
+        githubLink?: string;
+        avatarUrl?: string;
+        birthday?: string;
       } = {
-        name: formData.name || null,
-        gender: formData.gender || null,
-        nickname: formData.nickname || null,
-        occupation: formData.occupation || null,
-        location: formData.location || null,
-        githubLink: formData.githubLink || null,
-        avatarUrl: formData.avatarUrl || null,
+        name: formData.name.trim(),
+        ...(formData.gender && formData.gender.trim() && { gender: formData.gender.trim() }),
+        ...(formData.nickname && formData.nickname.trim() && { nickname: formData.nickname.trim() }),
+        ...(formData.occupation && formData.occupation.trim() && { occupation: formData.occupation.trim() }),
+        ...(formData.location && formData.location.trim() && { location: formData.location.trim() }),
+        ...(formData.githubLink && formData.githubLink.trim() && { githubLink: formData.githubLink.trim() }),
+        ...(formData.avatarUrl && formData.avatarUrl.trim() && { avatarUrl: formData.avatarUrl.trim() }),
+        ...(formData.birthday && { birthday: formData.birthday }),
       };
-
-      if (formData.birthday) {
-        updateData.birthday = formData.birthday;
-      } else {
-        updateData.birthday = null;
-      }
 
       await updateUser(userId, updateData);
       setSuccess(true);
