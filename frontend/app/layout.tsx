@@ -1,5 +1,6 @@
 import React from 'react';
 import './globals.css';
+import { AuthProvider } from '../contexts/AuthContext';
 
 export const metadata = {
   title: '水球軟體學院： 軟體設計模式精通之旅',
@@ -24,7 +25,9 @@ export default function RootLayout({
         `}</style>
       </head>
       {/* bg-gray-900 sets the dark background for the entire application */}
-      <body className="bg-gray-900">{children}</body>
+      <body className="bg-gray-900">
+        <AuthProvider>{children}</AuthProvider>
+      </body>
     </html>
   );
 }

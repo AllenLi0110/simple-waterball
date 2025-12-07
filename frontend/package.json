@@ -12,9 +12,9 @@
     "test:coverage": "jest --coverage",
     "test:e2e": "playwright test",
     "test:e2e:ui": "playwright test --ui",
-    "test:bdd": "cucumber-js specs/features/ --require-module ts-node/register --require tests/step-definitions/common.steps.ts --require tests/step-definitions/course-list.steps.ts --require tests/step-definitions/course-detail.steps.ts --require tests/support/world.ts --require tests/support/hooks.ts",
-    "test:bdd:watch": "cucumber-js specs/features/ --require-module ts-node/register --require tests/step-definitions/course-list.steps.ts --require tests/step-definitions/course-detail.steps.ts --require tests/support/world.ts --require tests/support/hooks.ts --watch",
-    "test:bdd:html": "cucumber-js specs/features/ --require-module ts-node/register --require tests/step-definitions/course-list.steps.ts --require tests/step-definitions/course-detail.steps.ts --require tests/support/world.ts --require tests/support/hooks.ts --format html:reports/cucumber-report.html"
+    "test:bdd": "cucumber-js specs/features/ --require-module ts-node/register --require tests/step-definitions/common.steps.ts --require tests/step-definitions/course-list.steps.ts --require tests/step-definitions/course-detail.steps.ts --require tests/step-definitions/auth.steps.ts --require tests/support/world.ts --require tests/support/hooks.ts",
+    "test:bdd:watch": "cucumber-js specs/features/ --require-module ts-node/register --require tests/step-definitions/course-list.steps.ts --require tests/step-definitions/course-detail.steps.ts --require tests/step-definitions/auth.steps.ts --require tests/support/world.ts --require tests/support/hooks.ts --watch",
+    "test:bdd:html": "cucumber-js specs/features/ --require-module ts-node/register --require tests/step-definitions/course-list.steps.ts --require tests/step-definitions/course-detail.steps.ts --require tests/step-definitions/auth.steps.ts --require tests/support/world.ts --require tests/support/hooks.ts --format html:reports/cucumber-report.html"
   },
   "dependencies": {
     "hls.js": "^1.6.15",
