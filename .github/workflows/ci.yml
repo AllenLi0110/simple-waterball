@@ -82,7 +82,14 @@ jobs:
           cd ../backend
           chmod +x ./gradlew
           ./gradlew build -x test
-          nohup java -jar build/libs/*.jar > /tmp/backend.log 2>&1 &
+          JAR_FILE=$(find build/libs -name "*.jar" ! -name "*-plain.jar" | head -n 1)
+          if [ -z "$JAR_FILE" ]; then
+            echo "Error: No executable JAR file found"
+            ls -la build/libs/
+            exit 1
+          fi
+          echo "Starting backend with JAR: $JAR_FILE"
+          nohup java -jar "$JAR_FILE" > /tmp/backend.log 2>&1 &
           echo $! > /tmp/backend.pid
           sleep 10
       
@@ -184,7 +191,14 @@ jobs:
           cd ../backend
           chmod +x ./gradlew
           ./gradlew build -x test
-          nohup java -jar build/libs/*.jar > /tmp/backend.log 2>&1 &
+          JAR_FILE=$(find build/libs -name "*.jar" ! -name "*-plain.jar" | head -n 1)
+          if [ -z "$JAR_FILE" ]; then
+            echo "Error: No executable JAR file found"
+            ls -la build/libs/
+            exit 1
+          fi
+          echo "Starting backend with JAR: $JAR_FILE"
+          nohup java -jar "$JAR_FILE" > /tmp/backend.log 2>&1 &
           echo $! > /tmp/backend.pid
           sleep 10
       
