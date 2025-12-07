@@ -4,15 +4,15 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 /**
- * 這是一個簡單的 REST Controller，用於測試應用程式是否正常運行。
+ * A simple REST Controller for testing if the application is running properly.
  */
-@RestController // 標記這個類別是一個處理 HTTP 請求的 RESTful Controller
+@RestController // Marks this class as a RESTful Controller that handles HTTP requests
 public class HelloWorldController {
 
     /**
-     * 定義一個 GET 請求的端點，路徑為 /hello
-     * 當使用者存取 http://localhost:8080/hello 時，將會執行這個方法
-     * @return 返回一個簡單的字串訊息
+     * Define a GET request endpoint with path /hello
+     * When users access http://localhost:8080/hello, this method will be executed
+     * @return Returns a simple string message
      */
     @GetMapping("/hello")
     public String sayHello() {

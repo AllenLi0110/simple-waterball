@@ -1,0 +1,13 @@
+{
+  "extends": "./tsconfig.json",
+  "compilerOptions": {
+    "module": "commonjs",
+    "esModuleInterop": true,
+    "allowSyntheticDefaultImports": true,
+    "types": ["node", "@cucumber/cucumber", "@playwright/test"]
+  },
+  "include": [
+    "tests/**/*.ts",
+    "specs/**/*.feature"
+  ]
+}
