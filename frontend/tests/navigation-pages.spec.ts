@@ -7,7 +7,8 @@ test.describe('導航頁面功能', () => {
     await page.waitForLoadState('networkidle');
     await page.waitForTimeout(1000);
     
-    const heading = page.locator('h1').filter({ hasText: '排行榜' });
+    // 使用 main 區域中的 h1，避免與 header 中的 h1 衝突
+    const heading = page.locator('main h1, [role="main"] h1').filter({ hasText: '排行榜' }).first();
     await expect(heading).toBeVisible({ timeout: 10000 });
   });
 
@@ -23,7 +24,8 @@ test.describe('導航頁面功能', () => {
     await rankingsLink.click();
     
     await page.waitForURL('/rankings', { timeout: 10000 });
-    const heading = page.locator('h1').filter({ hasText: '排行榜' });
+    // 使用 main 區域中的 h1
+    const heading = page.locator('main h1, [role="main"] h1').filter({ hasText: '排行榜' }).first();
     await expect(heading).toBeVisible({ timeout: 10000 });
   });
 
@@ -33,7 +35,8 @@ test.describe('導航頁面功能', () => {
     await page.waitForLoadState('networkidle');
     await page.waitForTimeout(1000);
     
-    const heading = page.locator('h1').filter({ hasText: 'SOP 寶典' });
+    // 使用 main 區域中的 h1
+    const heading = page.locator('main h1, [role="main"] h1').filter({ hasText: 'SOP 寶典' }).first();
     await expect(heading).toBeVisible({ timeout: 10000 });
   });
 });
