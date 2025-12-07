@@ -3,10 +3,13 @@
 import React, { useState, useEffect } from 'react';
 import { useParams, useRouter } from 'next/navigation';
 import { Course } from '../../../types/course';
+import { useAuth } from '../../../contexts/AuthContext';
+import { Order } from '../../../types/order';
 
 const CourseDetailPage: React.FC = () => {
     const params = useParams();
     const router = useRouter();
+    const { user } = useAuth();
     const courseId = params?.courseId as string;
     const API_URL: string = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8080';
     
@@ -18,6 +21,37 @@ const CourseDetailPage: React.FC = () => {
             if (!courseId) return;
             
             try {
+                // Check if user has purchased this course
+                let isPurchased = false;
+                if (user) {
+                    try {
+                        const ordersResponse = await fetch(`${API_URL}/api/orders/user/${user.id}`, {
+                            credentials: 'include',
+                        });
+                        if (ordersResponse.ok) {
+                            const ordersData = await ordersResponse.json();
+                            if (ordersData && ordersData.data) {
+                                const orders: Order[] = ordersData.data;
+                                const courseIdNum = Number(courseId);
+                                // Check if there's a PAID order for this course
+                                isPurchased = orders.some(
+                                    order => order.courseId === courseIdNum && order.status === 'PAID'
+                                );
+                            }
+                        }
+                    } catch (err) {
+                        console.error("Failed to fetch orders:", err);
+                        // Continue with course fetch even if orders fetch fails
+                    }
+                }
+                
+                // If not purchased, redirect to order page
+                if (!isPurchased) {
+                    router.replace(`/orders/create/${courseId}`);
+                    return;
+                }
+                
+                // If purchased, fetch course and redirect to first chapter
                 const response = await fetch(`${API_URL}/api/courses/${courseId}`);
                 
                 if (!response.ok) {
@@ -50,7 +84,7 @@ const CourseDetailPage: React.FC = () => {
         };
         
         fetchCourseAndRedirect();
-    }, [courseId, API_URL, router]);
+    }, [courseId, API_URL, router, user]);
     
     // Show loading or error state while redirecting
     return (

@@ -19,7 +19,14 @@ const CourseCard: React.FC<CourseCardProps> = ({ data, isSelected = false, onSel
         if (onSelect) {
             onSelect(data.id);
         }
-        router.push(`/courses/${data.id}`);
+        // If purchased, go to course chapters
+        if (isPurchased) {
+            router.push(`/courses/${data.id}`);
+        } 
+        // If not purchased, go to order page
+        else {
+            router.push(`/orders/create/${data.id}`);
+        }
     };
     
     const handleButtonClick = (e: React.MouseEvent) => {
