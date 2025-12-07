@@ -3,6 +3,8 @@
 import React, { useState, useEffect } from 'react';
 import CourseCard from './CourseCard';
 import { Course, ApiResponse } from '../types/course';
+import { useAuth } from '../contexts/AuthContext';
+import { Order } from '../types/order';
 
 interface CourseListProps {
     courses?: Course[]; // Optional: courses data passed from parent
@@ -11,6 +13,8 @@ interface CourseListProps {
     containerClassName?: string; // Optional container styling
     loading?: boolean; // Optional: loading state from parent
     error?: string | null; // Optional: error state from parent
+    selectedCourseId?: number | null; // Optional: controlled selected course ID from parent
+    onCourseSelect?: (courseId: number) => void; // Optional: callback when course is selected
 }
 
 const CourseList: React.FC<CourseListProps> = ({ 
@@ -19,13 +23,28 @@ const CourseList: React.FC<CourseListProps> = ({
     showSelection = false,
     containerClassName = "",
     loading: loadingProp,
-    error: errorProp
+    error: errorProp,
+    selectedCourseId: selectedCourseIdProp,
+    onCourseSelect
 }) => {
     const API_URL: string = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8080';
+    const { user } = useAuth();
     const [courses, setCourses] = useState<Course[]>([]);
     const [loading, setLoading] = useState<boolean>(true);
     const [error, setError] = useState<string | null>(null);
     const [selectedCourseId, setSelectedCourseId] = useState<number | null>(null);
+    const [purchasedCourseIds, setPurchasedCourseIds] = useState<Set<number>>(new Set());
+    
+    // Use controlled selectedCourseId if provided, otherwise use internal state
+    const effectiveSelectedCourseId = selectedCourseIdProp !== undefined ? selectedCourseIdProp : selectedCourseId;
+    
+    const handleCourseSelect = (courseId: number) => {
+        if (onCourseSelect) {
+            onCourseSelect(courseId);
+        } else {
+            setSelectedCourseId(courseId);
+        }
+    };
     
     // Use props if provided, otherwise fetch data
     const isControlled = coursesProp !== undefined;
@@ -36,9 +55,19 @@ const CourseList: React.FC<CourseListProps> = ({
     // Handle controlled mode: set selected course when courses prop changes
     useEffect(() => {
         if (isControlled && coursesProp && coursesProp.length > 0 && showSelection) {
-            setSelectedCourseId(coursesProp[0].id);
+            if (selectedCourseIdProp === undefined) {
+                // Only set internal state if not controlled
+                setSelectedCourseId(coursesProp[0].id);
+            }
         }
-    }, [isControlled, coursesProp, showSelection]);
+    }, [isControlled, coursesProp, showSelection, selectedCourseIdProp]);
+    
+    // Sync internal state with controlled prop
+    useEffect(() => {
+        if (selectedCourseIdProp !== undefined) {
+            setSelectedCourseId(selectedCourseIdProp);
+        }
+    }, [selectedCourseIdProp]);
 
     // Handle uncontrolled mode: fetch courses
     useEffect(() => {
@@ -77,8 +106,8 @@ const CourseList: React.FC<CourseListProps> = ({
                 console.log('Number of courses:', coursesData.length);
                 
                 setCourses(coursesData);
-                if (coursesData.length > 0 && showSelection) {
-                    // Default to the first course being selected
+                if (coursesData.length > 0 && showSelection && selectedCourseIdProp === undefined) {
+                    // Default to the first course being selected (only if not controlled)
                     setSelectedCourseId(coursesData[0].id);
                 }
             } catch (err) {
@@ -96,6 +125,45 @@ const CourseList: React.FC<CourseListProps> = ({
 
         fetchCourses();
     }, [API_URL, showSelection, isControlled]);
+    
+    // Fetch user's purchased courses
+    useEffect(() => {
+        if (!user) {
+            setPurchasedCourseIds(new Set());
+            return;
+        }
+        
+        const fetchPurchasedCourses = async () => {
+            try {
+                const response = await fetch(`${API_URL}/api/orders/user/${user.id}`);
+                if (!response.ok) {
+                    return; // Silently fail if orders can't be fetched
+                }
+                
+                const responseData = await response.json();
+                if (responseData && responseData.data) {
+                    const orders: Order[] = responseData.data;
+                    console.log('All orders:', orders);
+                    // Get course IDs that have PAID status
+                    const paidOrders = orders.filter(order => {
+                        const isPaid = order.status === 'PAID';
+                        console.log(`Order ${order.orderNumber}: status=${order.status}, courseId=${order.courseId}, isPaid=${isPaid}`);
+                        return isPaid;
+                    });
+                    console.log('Paid orders:', paidOrders);
+                    const paidCourseIds = new Set(
+                        paidOrders.map(order => Number(order.courseId)) // Ensure it's a number
+                    );
+                    console.log('Purchased course IDs:', Array.from(paidCourseIds));
+                    setPurchasedCourseIds(paidCourseIds);
+                }
+            } catch (err) {
+                console.error("Failed to fetch purchased courses:", err);
+            }
+        };
+        
+        fetchPurchasedCourses();
+    }, [user, API_URL]);
 
     const finalDisplayCourses = limit ? displayCourses.slice(0, limit) : displayCourses;
 
@@ -125,15 +193,22 @@ const CourseList: React.FC<CourseListProps> = ({
 
     return (
         <div className={`grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 ${containerClassName}`}>
-            {finalDisplayCourses.map(course => (
-                <div key={course.id} className="col-span-1 h-full">
-                    <CourseCard 
-                        data={course} 
-                        isSelected={showSelection && selectedCourseId === course.id}
-                        onSelect={() => setSelectedCourseId(course.id)}
-                    />
-                </div>
-            ))}
+            {finalDisplayCourses.map(course => {
+                const courseIdNum = Number(course.id);
+                const isPurchased = purchasedCourseIds.has(courseIdNum);
+                const isSelected = showSelection && effectiveSelectedCourseId === course.id;
+                console.log(`Course ${course.id} (${course.title}): courseIdNum=${courseIdNum}, isPurchased=${isPurchased}, isSelected=${isSelected}, effectiveSelectedCourseId=${effectiveSelectedCourseId}`);
+                return (
+                    <div key={course.id} className="col-span-1 h-full">
+                        <CourseCard 
+                            data={course} 
+                            isSelected={isSelected}
+                            onSelect={() => handleCourseSelect(course.id)}
+                            isPurchased={isPurchased}
+                        />
+                    </div>
+                );
+            })}
         </div>
     );
 };
