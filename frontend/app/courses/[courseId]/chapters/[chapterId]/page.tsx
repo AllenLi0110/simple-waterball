@@ -238,7 +238,7 @@ const ChapterDetailPage: React.FC = () => {
                                 
                                 if (data.type === Hls.ErrorTypes.NETWORK_ERROR && data.details === 'manifestLoadError') {
                                     // **修正點 2: 明確提示 CORS/網絡錯誤**
-                                    let statusText = data?.response?.code === 0 ? 'CORS/網絡被阻止' : `HTTP Status ${data?.response?.code}`;
+                                    const statusText = data?.response?.code === 0 ? 'CORS/網絡被阻止' : `HTTP Status ${data?.response?.code}`;
                                     errorMsg = `🚨 視頻流加載失敗 (Manifest)：\n**原因可能是 CORS 策略限制或網絡連接問題。**\n請確認影片伺服器 (${new URL(videoUrl).host}) 已配置 'Access-Control-Allow-Origin' 允許您的網域 (http://localhost:3000)。\n狀態: ${statusText}\nURL: ${videoUrl}`;
                                 }
                                 

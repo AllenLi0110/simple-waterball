@@ -12,6 +12,7 @@ interface CourseCardProps {
 
 const CourseCard: React.FC<CourseCardProps> = ({ data, isSelected = false, onSelect }) => {    
     const router = useRouter();
+    const [imageError, setImageError] = React.useState(false);
 
     const handleClick = () => {
         if (onSelect) {
@@ -23,7 +24,11 @@ const CourseCard: React.FC<CourseCardProps> = ({ data, isSelected = false, onSel
     return (
         <div 
             data-testid="course-card"
-            className={`flex flex-col h-full rounded-xl overflow-hidden p-0 transition-all duration-300 cursor-pointer bg-gray-800 shadow-xl border-2 relative ${
+            className={`flex flex-col h-full rounded-xl overflow-hidden p-0 transition-all duration-300 cursor-pointer shadow-xl border-2 relative ${
+                data.isFeatured 
+                    ? 'bg-yellow-600/20 border-yellow-500/50' 
+                    : 'bg-gray-800'
+            } ${
                 isSelected 
                     ? 'border-[#ffd700] hover:border-yellow-200 hover:shadow-[0_0_30px_rgba(255,215,0,0.6)] hover:scale-[1.05] hover:bg-gray-700' 
                     : 'border-white hover:border-gray-300 hover:shadow-white/30 hover:shadow-2xl hover:scale-[1.02]'
@@ -40,18 +45,22 @@ const CourseCard: React.FC<CourseCardProps> = ({ data, isSelected = false, onSel
                 isSelected ? 'hover:brightness-110' : ''
             }`}>                
                 {/* Course Image */}
-                {data.imageUrl ? (
+                {data.imageUrl && !imageError ? (
                     <img 
                         src={data.imageUrl} 
                         alt={data.title}
                         className="w-full h-full object-cover"
-                        onError={(e) => {
-                            // Fallback if image fails to load
-                            const target = e.target as HTMLImageElement;
-                            target.style.display = 'none';
+                        onError={() => {
+                            setImageError(true);
                         }}
                     />
                 ) : null}
+                {/* Fallback content when image is missing or fails to load */}
+                {(!data.imageUrl || imageError) && data.imageSubtitle && (
+                    <div className="absolute inset-0 flex items-center justify-center text-gray-400 text-sm">
+                        {data.imageSubtitle}
+                    </div>
+                )}
             </div>
 
             {/* Content Area */}
