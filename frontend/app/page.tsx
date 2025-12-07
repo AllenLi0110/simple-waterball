@@ -5,7 +5,7 @@ import Sidebar from '../components/Sidebar';
 import CourseList from '../components/CourseList';
 import Footer from '../components/Footer';
 import Header from '../components/Header';
-import { Course, ApiResponse } from '../types/course';
+import { Course } from '../types/course';
 import { FileText, BookOpen, Users, Star, ArrowRight } from 'lucide-react';
 import Link from 'next/link';
 
@@ -71,6 +71,25 @@ const HomePage: React.FC = () => {
 
         fetchCourses();
     }, [API_URL]);
+    
+    // Update selectedCourseId when selectedMenu changes
+    useEffect(() => {
+        if (selectedMenu && courses.length > 0) {
+            const course = courses.find(c => c.title === selectedMenu);
+            if (course) {
+                setSelectedCourseId(course.id);
+            }
+        }
+    }, [selectedMenu, courses]);
+    
+    // Update selectedMenu when selectedCourseId changes (from course card click)
+    const handleCourseSelect = (courseId: number) => {
+        setSelectedCourseId(courseId);
+        const course = courses.find(c => c.id === courseId);
+        if (course) {
+            setSelectedMenu(course.title);
+        }
+    };
 
     const mainCourse = courses.find(c => c.title === selectedMenu) || (courses.length > 0 ? courses[0] : null);
 
@@ -172,6 +191,8 @@ const HomePage: React.FC = () => {
                             courses={courses} 
                             limit={3} 
                             showSelection={true}
+                            selectedCourseId={selectedCourseId}
+                            onCourseSelect={handleCourseSelect}
                             loading={loading}
                             error={error}
                         />

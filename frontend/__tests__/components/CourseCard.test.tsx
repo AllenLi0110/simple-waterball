@@ -86,11 +86,11 @@ describe('CourseCard Component', () => {
     }
   });
 
-  test('should navigate to course detail page when clicking button', () => {
+  test('should navigate to order creation page when clicking purchase button', () => {
     render(<CourseCard data={mockCourse} />);
     const button = screen.getByText('立即購買');
     fireEvent.click(button);
-    expect(mockPush).toHaveBeenCalledWith('/courses/1');
+    expect(mockPush).toHaveBeenCalledWith('/orders/create/1');
   });
 
   test('should display fallback content when image fails to load', () => {

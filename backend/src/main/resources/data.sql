@@ -3,11 +3,14 @@
 -- It initializes course data for the platform
 
 -- Clear existing data (only recommended for development)
+-- Delete in order to respect foreign key constraints
 DELETE FROM videos;
 DELETE FROM chapters;
+DELETE FROM orders;  -- Delete orders before courses due to foreign key constraint
 DELETE FROM courses;
 
 -- Reset sequences (PostgreSQL)
+ALTER SEQUENCE IF EXISTS orders_id_seq RESTART WITH 1;
 ALTER SEQUENCE IF EXISTS courses_id_seq RESTART WITH 1;
 ALTER SEQUENCE IF EXISTS chapters_id_seq RESTART WITH 1;
 ALTER SEQUENCE IF EXISTS videos_id_seq RESTART WITH 1;
@@ -28,7 +31,7 @@ INSERT INTO courses (title, subtitle, description, price_text, button_label, ima
 ('AI x BDD: 規格驅動全自動開發術', 
  '善用軟工實踐,做到 100% 全自動化、高精準度的 Vibe Coding', 
  'AI Top 1% 工程師必修課,掌握規格驅動的全自動化開發。學習如何結合 AI 與 BDD (Behavior-Driven Development) 來實現完全自動化的開發流程。', 
- 'NT$ 4,500', 
+ '現在購買僅需 NT$7,999 (原價 NT$15,999)', 
  '立刻購買', 
  '/images/course_4.png', 
  'AI x BDD 開發', 

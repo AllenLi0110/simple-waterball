@@ -4,6 +4,7 @@ import React from 'react';
 import Sidebar from '../../components/Sidebar';
 import Header from '../../components/Header';
 import CourseList from '../../components/CourseList';
+import AllOrderHistory from '../../components/AllOrderHistory';
 
 const CoursesPage: React.FC = () => {
     return (
@@ -17,6 +18,7 @@ const CoursesPage: React.FC = () => {
 
                 <main className="flex-1 p-6 md:p-8 bg-gray-900">
                     <CourseList showSelection={true} />
+                    <AllOrderHistory />
                 </main>
             </div>
         </div>

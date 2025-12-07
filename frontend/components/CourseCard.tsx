@@ -7,19 +7,46 @@ import { Course } from '../types/course';
 interface CourseCardProps {
     data: Course;
     isSelected?: boolean;
-    onSelect?: () => void;
+    onSelect?: (courseId: number) => void;
+    isPurchased?: boolean; // Whether the user has purchased this course
 }
 
-const CourseCard: React.FC<CourseCardProps> = ({ data, isSelected = false, onSelect }) => {    
+const CourseCard: React.FC<CourseCardProps> = ({ data, isSelected = false, onSelect, isPurchased = false }) => {    
     const router = useRouter();
     const [imageError, setImageError] = React.useState(false);
 
     const handleClick = () => {
         if (onSelect) {
-            onSelect();
+            onSelect(data.id);
         }
         router.push(`/courses/${data.id}`);
     };
+    
+    const handleButtonClick = (e: React.MouseEvent) => {
+        e.stopPropagation();
+        // If purchased, go to course chapters
+        if (isPurchased) {
+            router.push(`/courses/${data.id}`);
+        } 
+        // Check if button label indicates purchase
+        else if (data.buttonLabel && (data.buttonLabel.includes('購買') || data.buttonLabel.includes('购买'))) {
+            router.push(`/orders/create/${data.id}`);
+        } else {
+            handleClick();
+        }
+    };
+    
+    // Determine button label
+    const buttonLabel = isPurchased ? '開始上課' : data.buttonLabel;
+    
+    // Debug log
+    React.useEffect(() => {
+        if (isPurchased) {
+            console.log(`Course ${data.id} (${data.title}) is purchased, showing "開始上課"`);
+        } else {
+            console.log(`Course ${data.id} (${data.title}) is NOT purchased, showing "${data.buttonLabel}"`);
+        }
+    }, [isPurchased, data.id, data.title, data.buttonLabel]);
 
     return (
         <div 
@@ -34,6 +61,12 @@ const CourseCard: React.FC<CourseCardProps> = ({ data, isSelected = false, onSel
                     : 'border-white hover:border-gray-300 hover:shadow-white/30 hover:shadow-2xl hover:scale-[1.02]'
             }`}
             onClick={handleClick}
+            onMouseEnter={() => {
+                // Trigger selection on hover if not already selected
+                if (!isSelected && onSelect) {
+                    onSelect(data.id);
+                }
+            }}
         >
             {/* Yellow top border with rounded corners for selected card */}
             {isSelected && (
@@ -87,17 +120,14 @@ const CourseCard: React.FC<CourseCardProps> = ({ data, isSelected = false, onSel
 
                 {/* Button */}
                 <button 
-                    onClick={(e) => {
-                        e.stopPropagation();
-                        handleClick();
-                    }}
+                    onClick={handleButtonClick}
                     className={`w-full py-3 rounded-xl font-bold transition-all duration-300 transform ${
                         isSelected 
                             ? 'bg-[#1c1f2e] text-white border-2 border-[#ffd700] hover:bg-[#353a4f] hover:border-yellow-200 hover:scale-[1.05] hover:shadow-[0_0_20px_rgba(255,215,0,0.7)]' 
                             : 'bg-[#ffd700] text-gray-900 shadow-lg hover:bg-yellow-400 hover:scale-[1.03] hover:shadow-yellow-500/50'
                     }`}
                 >
-                    {data.buttonLabel}
+                    {buttonLabel}
                 </button>
             </div>
         </div>
